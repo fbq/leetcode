@@ -1,3 +1,4 @@
+// vim: sw=4:sts=4:et:ts=4:sta:si
 /*
  * Longest Palindromic Substring
  *
@@ -31,9 +32,21 @@ public:
     }
     
     int longestPalindromeCenter(char* str, int* p, int len) {
-        int i = 0;
-        while (i < len) {
-            int j = p[i] + 1;
+        /* 
+         * @id: the current symmetic center of a palindrome substring with the most left tail.
+         * @mx: the tail of id
+         * for each i in the loop, if i < mx, then p[i] is at least min(p[id - (i - id)], mx - i)
+         */
+        int id = 0;
+        int mx = 0;
+ 
+        for (int i = 0; i < len; i++) {
+            int j;
+            if (i < mx) {
+                j = min(p[id - (i - id)], mx - i);
+            }
+            else
+                j = 1;
             while (i - j >= 0 && i + j < len) {
                 if (str[i-j] == str[i+j]) {
                     j++;
@@ -42,11 +55,10 @@ public:
                     break;
             }
             p[i] = j-1;
-            for (int k = 1; k < j; k++) {
-                int Min = min(p[i-k], j-k-1);
-                p[i+k] = max(p[i+k], Min);
+            if (i + p[i] > mx) {
+                id = i;
+                mx = i + p[i];
             }
-            i++;
         }
         int maxR = 0;
         int index = 0;
